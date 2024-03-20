@@ -34,6 +34,41 @@
 	</table>
 	
 	{{ knp_pagination_render(lesSessions) }}
+
+	<br><br>
+	<h2>SESSIONS DE FORMATION A VALIDER</h2>
+	<table class="table">
+		<thead>
+			<tr>
+				<th>Id</th>
+				<th>Formation</th>
+				<th>Date debut</th>
+				<th>Nombre de places</th>
+				<th>Nombre d'inscrits</th>
+				<th>Valider</th>
+			</tr>
+		</thead>
+		<tbody>
+			{% for session in lesSessions %}
+
+				{% if session.nbPlaces == session.nbInscrits or ((date(session.dateDebut|date('Y-m-d')).diff(date("now"|date('Y-m-d')))).days)<8 %} {# or session.dateDebut|date('Y-m-d')<"now"|date('Y-m-d')#}
+
+					<tr {# si le nombre de passages dans la boucle est pair #} {% if loop.index is even %} class="success" {% else %} class="info" {% endif %}>
+						<td>{{session.id}}</td>
+						<td>{{session.formation.libelle}}-{{session.formation.niveau}}</td>
+						<td>{{session.dateDebut|date('Y-m-d')}}</td>
+						<td>{{session.nbPlaces}}</td>
+						<td>{{session.nbInscrits}}</td>
+						<td><a href="{{ path('adminSessionValider', {'id': session.id}) }}">Valider</a></td>
+					</tr>
+
+				{% endif %}
+
+			{% endfor %}
+		</tbody>
+
+	</table>
+
 	
 	<script>
 		$(function() {

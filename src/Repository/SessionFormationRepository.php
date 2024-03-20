@@ -21,10 +21,12 @@ class SessionFormationRepository extends ServiceEntityRepository
         parent::__construct($registry, SessionFormation::class);
     }
 
+
+
     public function listeSessions() // Liste toutes les sessions avec pagination
 	{
-		$queryBuilder = $this->createQueryBuilder('s');
-
+		$queryBuilder = $this->createQueryBuilder('s')
+		->andWhere(':close = 0');
 		// On n'ajoute pas de critère ou tri particulier ici car on veut toutes les sessions, la construction
 		// de notre requête est donc finie
 
@@ -34,6 +36,9 @@ class SessionFormationRepository extends ServiceEntityRepository
 		// On gère ensuite la pagination grace au service KNPaginator
 		return $query->getResult();
 	}
+
+
+	
 	public function suppSession($id) // Suppression de la session d'identifiant $id
 	{
 		$qb = $this->createQueryBuilder('s');

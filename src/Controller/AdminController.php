@@ -15,6 +15,7 @@ use App\Entity\Statut;
 use App\Entity\Formation;
 use App\Entity\SessionFormation;
 use App\Entity\PlanFormation;
+use App\Entity\Inscription;
 
 use App\Form\ClientType;
 use App\Form\ClientCompletType;
@@ -28,6 +29,7 @@ use App\Repository\StatutRepository;
 use App\Repository\FormationRepository;
 use App\Repository\SessionFormationRepository;
 use App\Repository\PlanFormationRepository;
+use App\Repository\InscriptionnRepository;
 
 use Doctrine\Persistence\ManagerRegistry;
 
@@ -260,6 +262,7 @@ class AdminController extends AbstractController
 		return $this->render('Admin/formClient.html.twig', array('form' => $form->createView(), 'action' => 'suppression'));
     }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	#[Route('/admin/formation/liste', name: 'adminFormationListe')]
 	// Gestion des formations
 	public function listeFormation(Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine)
@@ -279,6 +282,8 @@ class AdminController extends AbstractController
 		
 		return $this->render('Admin/formation.html.twig', Array('lesFormations' => $lesFormationsPagines));
 	}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	#[Route('/admin/formation/modif/{id}', name: 'adminFormationModif')]
 	// Affichage du formulaire de modification d'une formation
 	public function modifFormation($id, Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine) // Affichage du formulaire de modification d'un client
@@ -354,7 +359,8 @@ class AdminController extends AbstractController
 		// Si formulaire pas encore soumis ou pas valide (affichage du formulaire)
 		return $this->render('Admin/formFormation.html.twig', array('form' => $form->createView(), 'action' => 'suppression'));
     }
-
+	
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	#[Route('/admin/session/liste', name: 'adminSessionListe')]
 	// Gestion des sessions de formation
 	public function listeSession(Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine)
@@ -374,6 +380,8 @@ class AdminController extends AbstractController
 		
 		return $this->render('Admin/session.html.twig', Array('lesSessions' => $lesSessionsPagines));
 	}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	#[Route('/admin/session/modif/{id}', name: 'adminSessionModif')]
 	// Affichage du formulaire de modification d'une session de formation
 	public function modifSession($id, Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine) // Affichage du formulaire de modification d'une session de formation
@@ -412,6 +420,8 @@ class AdminController extends AbstractController
 		// Si formulaire pas encore soumis ou pas valide (affichage du formulaire)
 		return $this->render('Admin/formSession.html.twig', array('form' => $form->createView(), 'action' => 'modification'));
 	}
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	#[Route('/admin/session/supp/{id}', name: 'adminSessionSupp')]
 	public function suppSession($id, Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine) // Affichage du formulaire de suppression d'une session de formation
     {
@@ -449,6 +459,7 @@ class AdminController extends AbstractController
 		return $this->render('Admin/formSession.html.twig', array('form' => $form->createView(), 'action' => 'suppression'));
     }
 
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 	#[Route('/admin/plan/liste', name: 'adminPlanListe')]
 	// Gestion des plans de formation
 	public function listePlanFormation(Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine)
@@ -545,4 +556,48 @@ class AdminController extends AbstractController
 		// Si formulaire pas encore soumis ou pas valide (affichage du formulaire)
 		return $this->render('Admin/formPlan.html.twig', array('form' => $form->createView(), 'action' => 'suppression'));
     }
+
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+	#[Route('/admin/session/valider/{id}', name: 'adminSessionValider')]
+	public function ValiderSession($id, Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine)
+	{
+		// On autorise l'acces uniquement à l'administrateur
+		$this->denyAccessUnlessGranted('ROLE_ADMIN');
+		
+		// Récupération de la session de formation d'identifiant $id
+		$em=$doctrine->getManager();
+		$rep = $em->getRepository(Inscription::class);
+		
+		$lesInscriptions = $rep->listeInscription($id);
+		//var_dump($lesInscriptions); die;
+		$lesInscriptionsPagines = $paginator->paginate(
+			$lesInscriptions, // Requête contenant les données à paginer (ici nos sessions de formation)
+			$request->query->getInt('page', 1), // Numéro de la page en cours, passé dans l'URL, 1 si aucune page
+			4 // Nombre de résultats par page
+		);
+		
+		return $this->render('Admin/validerSession.html.twig', Array('lesInscriptions' => $lesInscriptionsPagines));
+		
+	}	
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#[Route('/admin/session/valider/validation/{id}', name: 'adminSessionValidation')]
+public function ValidationSession($id, Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine) 
+{
+	$this->denyAccessUnlessGranted('ROLE_ADMIN');
+	//pour tousclient dans session écrire un message d'acceptation
+	//close == 1
+	
+}	
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+#[Route('/admin/session/valider/annulation/{id}', name: 'adminSessionAnnulation')]
+public function AnnulationSession($id, Request $request, PaginatorInterface $paginator, ManagerRegistry $doctrine) 
+{
+	$this->denyAccessUnlessGranted('ROLE_ADMIN');
+	//suppression des inscription des clients
+	//supp des plans de formations ?
+	//suppression de la session
+	
+}	
+//-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
 }

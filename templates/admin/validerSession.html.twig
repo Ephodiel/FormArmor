@@ -1,0 +1,67 @@
+{% extends 'admin_layout.html.twig' %}
+{% block FormArmor_body %}
+
+    <h2>AFFICHAGE DES INSCRIPTION</h2>
+    
+
+    <table class="table">
+		<thead>
+		<tr>
+			<th>Id</th>
+			<th>Status</th>
+			<th>Username</th>
+			<th>Adresse</th>
+			<th>Email</th>
+			<th>Telephone</th>
+		</tr>
+		</thead>
+		<tbody>
+			{% for inscription in lesInscriptions %}
+				<tr {# si le nombre de passages dans la boucle est pair #} {% if loop.index is even %} class="success" {% else %} class="info" {% endif %}>
+					<td>{{inscription.client.id}}</td>
+					<td>...</td>
+					<td>{{inscription.client.Username}}</td>
+					<td>{{inscription.client.adresse}} {{inscription.client.cp}} {{inscription.client.ville}}</td>
+					<td>{{inscription.client.Email}}</td>
+                    <td>{{inscription.client.tel}}</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+	
+	{{ knp_pagination_render(lesInscriptions) }}
+
+    <!-- <a class="btn btn-primary" href="#">Valider session</a> -->
+	<button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#myModal">Valider session</button>
+	<!-- The Modal -->
+	<div class="modal fade" id="myModal">
+		<div class="modal-dialog">
+			<div class="modal-content">
+
+			<!-- Modal Header -->
+			<div class="modal-header">
+				<h4 class="modal-title">Message de validation</h4>
+				<button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+			</div>
+
+			<!-- Modal body -->
+			<div class="modal-body">
+				<textarea class="form-control" rows="5" id="messageValidation" name="messageValidation"></textarea>
+			</div>
+
+			<!-- Modal footer -->
+			<div class="modal-footer">
+				<button type="button" class="btn btn-danger" data-bs-dismiss="modal">Valider session</button>
+			</div>
+
+		</div>
+	</div>
+
+	</div>
+
+    <a class="btn btn-primary" href="#">Annuler session</a>
+
+    
+    
+
+{% endblock %}
